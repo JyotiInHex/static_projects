@@ -72,7 +72,7 @@
 
   const ramp = t => { if (t < 0.6) tmp.copy(cLow).lerp(cMid, t / 0.6); else tmp.copy(cMid).lerp(cHigh, (t - 0.6) / 0.4); return tmp; };
   // ---------- Sphere: audio-reactive particle ball ----------
-  const BALL_R = 9, SHELL = 2200, FILL = 1100, NB = SHELL + FILL;
+  const BALL_R = 9, SHELL = 4200, FILL = 2400, NB = SHELL + FILL;
   let CRACKLE = 0.85, HOVER = 0.7;
   const baseCol = new THREE.Color(0xF25BD0), loudCol = new THREE.Color(0x4f46e5), sparkCol = new THREE.Color(0x06b6d4), white = new THREE.Color(1, 1, 1);
   const dir = new Float32Array(NB * 3), baseR = new Float32Array(NB), bIdx = new Uint8Array(NB), spark = new Float32Array(NB);
@@ -91,10 +91,23 @@
   const ballPts = new THREE.Points(bGeo, new THREE.PointsMaterial({ size: 0.28, map: new THREE.CanvasTexture(cv), vertexColors: true, transparent: true, alphaTest: 0.4, depthWrite: false, fog: false }));
   ballPts.frustumCulled = false;
   const ringPts = [];
-  for (let i = 0; i <= 128; i++) { const a = i / 128 * Math.PI * 2; ringPts.push(new THREE.Vector3(Math.cos(a) * BALL_R * 1.35, Math.sin(a) * BALL_R * 1.35, 0)); }
-  const rings = [0, 1].map(j => {
-    const l = new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts), new THREE.LineBasicMaterial({ color: 0xc7d2fe, fog: false }));
-    l.rotation.x = 1.2 + j * 0.7; l.rotation.y = j * 0.9; return l;
+  for (let i = 0; i <= 192; i++) {
+    const a = i / 192 * Math.PI * 2;
+    ringPts.push(new THREE.Vector3(Math.cos(a) * BALL_R * 1.35, Math.sin(a) * BALL_R * 1.35, 0));
+  }
+  const rings = Array.from({ length: 6 }, (_, j) => {
+    const radius = BALL_R * (1.18 + j * 0.13);
+    const points = ringPts.map(p => p.clone().multiplyScalar(radius / (BALL_R * 1.35)));
+    const material = new THREE.LineBasicMaterial({
+      color: j % 2 ? 0x00ff41 : 0xc7d2fe,
+      transparent: true,
+      opacity: 0.3 + (j % 3) * 0.12,
+      fog: false
+    });
+    const ring = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), material);
+    ring.rotation.set(0.45 + j * 0.22, 0.35 + j * 0.37, j * 0.16);
+    ring.userData.baseScale = 1 + j * 0.035;
+    return ring;
   });
   const ball = new THREE.Group();
   ball.add(ballPts, ...rings);
@@ -108,7 +121,12 @@
   function updateBall(time) {
     ball.rotation.set(0.35, time * 0.0002, 0);
     ball.scale.setScalar(1 + spec[31] * 0.1);
-    rings[0].rotation.z = time * 0.0005; rings[1].rotation.z = -time * 0.0004;
+    rings.forEach((ring, i) => {
+      ring.rotation.z += (i % 2 ? -1 : 1) * (0.0008 + i * 0.00015);
+      const pulse = 1 + spec[(i * 5 + 8) % spec.length] * 0.18;
+      ring.scale.setScalar(ring.userData.baseScale * pulse);
+      ring.material.opacity = 0.24 + spec[(i * 5 + 8) % spec.length] * 0.5;
+    });
     ball.updateMatrixWorld();
     ray.setFromCamera(ptr, camera);
     const on = !!ray.ray.intersectSphere(sph, hit);
@@ -121,7 +139,11 @@
       let x = dir[k3] * r, y = dir[k3 + 1] * r, z = dir[k3 + 2] * r;
       if (hover > 0.01) {
         const dx = x - hit.x, dy = y - hit.y, dz = z - hit.z, d = Math.sqrt(dx * dx + dy * dy + dz * dz);
-        if (d < 4) { const p = Math.pow(1 - d / 4, 2) * HOVER * hover * 3.5; x += dir[k3] * p; y += dir[k3 + 1] * p; z += dir[k3 + 2] * p; }
+        if (d < 6) {
+          const influence = Math.pow(1 - d / 6, 2) * HOVER * hover;
+          const p = influence * (5 + v * 4);
+          x += dir[k3] * p; y += dir[k3 + 1] * p; z += dir[k3 + 2] * p;
+        }
       }
       bPos[k3] = x; bPos[k3 + 1] = y; bPos[k3 + 2] = z;
       tmp.copy(baseCol).lerp(loudCol, Math.min(v * 1.3, 1));
