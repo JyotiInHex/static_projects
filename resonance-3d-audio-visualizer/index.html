@@ -331,7 +331,6 @@ html.matrix .drop{background:rgba(2,15,6,.92);border-color:#00ff41;color:#00ff41
 
   const CAMS = { wave: [0, 14, 30, 0, 1, -2], bars: [0, 2, 34, 0, 0, 0], circle: [0, 0, 36, 0, 0, 0], particles: [0, 0, 32, 0, 0, 0], sphere: [0, 0, 38, 0, 0, 0], liquidSphere: [0, 0, 27, 0, 0, 0], jarvis: [0, 0, 32, 0, 0, 0] };
   const look = new THREE.Vector3(0, 1, -2), camGoal = new THREE.Vector3(), lookGoal = new THREE.Vector3();
-  const $ = id => document.getElementById(id);
   const modeBtns = document.querySelectorAll('.modes button');
   function setMode(m) {
     mode = m;
@@ -384,12 +383,12 @@ html.matrix .drop{background:rgba(2,15,6,.92);border-color:#00ff41;color:#00ff41
   let state = 'idle'; // idle | playing | paused | ended | mic
   let tStart = 0, vol = prefs.vol, muted = false, sens = 1, shuffle = false, repeat = false, cur = -1, token = 0, drag = false;
   const list = []; // { file, name }
-  const seek = $('seek'), volEl = $('vol');
+  const seek = document.getElementById('seek'), volEl = document.getElementById('vol');
   const fmt = t => { t = Math.max(0, t | 0); return (t / 60 | 0) + ':' + String(t % 60).padStart(2, '0'); };
-  const setName = t => { $('name').textContent = t; };
+  const setName = t => { document.getElementById('name').textContent = t; };
   const tNow = () => !buffer || !ctx ? 0 : state === 'ended' ? buffer.duration : Math.min(buffer.duration, Math.max(0, ctx.currentTime - tStart));
   const fillRange = el => el.style.setProperty('--p', (el.value - el.min) / (el.max - el.min) * 100 + '%');
-  function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('show'), 2600); }
+  function toast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('show'), 2600); }
 
   function ensureAudio() {
     if (ctx) return;
@@ -403,22 +402,22 @@ html.matrix .drop{background:rgba(2,15,6,.92);border-color:#00ff41;color:#00ff41
   const applyGain = () => { if (gain) gain.gain.value = state === 'mic' ? 0 : muted ? 0 : vol; };
 
   function refresh() {
-    $('play').innerHTML = ic(state === 'playing' ? 'pause' : 'play');
-    $('empty').classList.toggle('hide', list.length > 0 || state === 'mic');
-    $('mic').classList.toggle('on', state === 'mic');
-    $('shuf').classList.toggle('on', shuffle); $('rep').classList.toggle('on', repeat);
-    $('mute').innerHTML = ic(muted || vol === 0 ? 'volx' : 'vol');
-    $('seekbox').classList.toggle('off', !buffer);
+    document.getElementById('play').innerHTML = ic(state === 'playing' ? 'pause' : 'play');
+    document.getElementById('empty').classList.toggle('hide', list.length > 0 || state === 'mic');
+    document.getElementById('mic').classList.toggle('on', state === 'mic');
+    document.getElementById('shuf').classList.toggle('on', shuffle); document.getElementById('rep').classList.toggle('on', repeat);
+    document.getElementById('mute').innerHTML = ic(muted || vol === 0 ? 'volx' : 'vol');
+    document.getElementById('seekbox').classList.toggle('off', !buffer);
   }
 
   function renderList() {
-    const ul = $('plist'); ul.textContent = '';
+    const ul = document.getElementById('plist'); ul.textContent = '';
     list.forEach((t, i) => {
       const li = document.createElement('li'), n = document.createElement('span'), s = document.createElement('span');
       li.className = i === cur ? 'on' : ''; n.className = 'n'; n.textContent = i + 1; s.textContent = t.name;
       li.append(n, s); li.onclick = () => go(i); ul.append(li);
     });
-    $('count').textContent = list.length + (list.length === 1 ? ' track' : ' tracks');
+    document.getElementById('count').textContent = list.length + (list.length === 1 ? ' track' : ' tracks');
   }
 
   function stopSrc() { if (src) { src.onended = null; try { src.stop(); } catch (e) {} src = null; } }
@@ -444,7 +443,7 @@ html.matrix .drop{background:rgba(2,15,6,.92);border-color:#00ff41;color:#00ff41
     try {
       const b = await ctx.decodeAudioData(await list[i].file.arrayBuffer());
       if (my !== token) return true;
-      buffer = b; setName(list[i].name); $('dur').textContent = fmt(b.duration); play(0, false);
+      buffer = b; setName(list[i].name); document.getElementById('dur').textContent = fmt(b.duration); play(0, false);
     } catch (e) {
       if (my === token) { buffer = null; stopSrc(); state = 'idle'; setName(list[i].name); toast('Could not decode that file'); refresh(); }
     }
@@ -462,7 +461,7 @@ html.matrix .drop{background:rgba(2,15,6,.92);border-color:#00ff41;color:#00ff41
 
   async function toggle() {
     if (state === 'mic') return;
-    if (!buffer) return list.length ? go(Math.max(cur, 0)) : $('file').click();
+    if (!buffer) return list.length ? go(Math.max(cur, 0)) : document.getElementById('file').click();
     if (state === 'playing') { await ctx.suspend(); state = 'paused'; }
     else if (state === 'paused') { await ctx.resume(); state = 'playing'; }
     else play(0, false);
@@ -491,50 +490,50 @@ html.matrix .drop{background:rgba(2,15,6,.92);border-color:#00ff41;color:#00ff41
       token++; stopSrc(); buffer = null;
       micStream = st; micNode = ctx.createMediaStreamSource(st); micNode.connect(analyser);
       state = 'mic'; if (ctx.state === 'suspended') ctx.resume();
-      applyGain(); setName('Microphone (live)'); $('cur').textContent = $('dur').textContent = '0:00'; seek.value = 0; fillRange(seek); refresh();
+      applyGain(); setName('Microphone (live)'); document.getElementById('cur').textContent = document.getElementById('dur').textContent = '0:00'; seek.value = 0; fillRange(seek); refresh();
     } catch (e) { toast('Microphone unavailable or permission denied'); }
   }
 
   function tickUI() {
     if (!buffer || drag) return;
     const p = tNow();
-    seek.value = p / buffer.duration * 1000; fillRange(seek); $('cur').textContent = fmt(p);
+    seek.value = p / buffer.duration * 1000; fillRange(seek); document.getElementById('cur').textContent = fmt(p);
   }
 
   // controls
-  $('play').onclick = toggle; $('next').onclick = () => step(1); $('prev').onclick = prev;
-  $('shuf').onclick = () => { shuffle = !shuffle; refresh(); };
-  $('rep').onclick = () => { repeat = !repeat; refresh(); };
-  $('mic').onclick = $('micBig').onclick = toggleMic;
-  $('pick').onclick = $('add').onclick = () => $('file').click();
-  $('file').onchange = e => { addFiles(e.target.files); e.target.value = ''; };
-  $('clear').onclick = () => {
+  document.getElementById('play').onclick = toggle; document.getElementById('next').onclick = () => step(1); document.getElementById('prev').onclick = prev;
+  document.getElementById('shuf').onclick = () => { shuffle = !shuffle; refresh(); };
+  document.getElementById('rep').onclick = () => { repeat = !repeat; refresh(); };
+  document.getElementById('mic').onclick = document.getElementById('micBig').onclick = toggleMic;
+  document.getElementById('pick').onclick = document.getElementById('add').onclick = () => document.getElementById('file').click();
+  document.getElementById('file').onchange = e => { addFiles(e.target.files); e.target.value = ''; };
+  document.getElementById('clear').onclick = () => {
     token++; stopSrc(); list.length = 0; cur = -1; buffer = null; if (state !== 'mic') state = 'idle';
-    setName(micStream ? 'Microphone (live)' : 'No track loaded'); $('cur').textContent = $('dur').textContent = '0:00'; seek.value = 0; fillRange(seek);
+    setName(micStream ? 'Microphone (live)' : 'No track loaded'); document.getElementById('cur').textContent = document.getElementById('dur').textContent = '0:00'; seek.value = 0; fillRange(seek);
     renderList(); applyGain(); refresh();
   };
-  seek.oninput = () => { if (buffer) { drag = true; $('cur').textContent = fmt(seek.value / 1000 * buffer.duration); } };
+  seek.oninput = () => { if (buffer) { drag = true; document.getElementById('cur').textContent = fmt(seek.value / 1000 * buffer.duration); } };
   seek.onchange = () => { drag = false; doSeek(seek.value / 1000 * buffer.duration); };
   volEl.oninput = () => { vol = volEl.value / 100; muted = false; prefs.vol = vol; save(); applyGain(); refresh(); };
-  $('mute').onclick = () => { muted = !muted; applyGain(); refresh(); };
-  $('full').onclick = () => {
+  document.getElementById('mute').onclick = () => { muted = !muted; applyGain(); refresh(); };
+  document.getElementById('full').onclick = () => {
     const el = document.documentElement;
     if (document.fullscreenElement) document.exitFullscreen();
     else if (el.requestFullscreen) el.requestFullscreen().catch(() => {}); else toast('Fullscreen is not supported here');
   };
 
   // drawers
-  const drawers = { list: $('dList'), set: $('dSet') };
-  function openDrawer(k) { Object.keys(drawers).forEach(n => drawers[n].classList.toggle('open', n === k && !drawers[n].classList.contains('open'))); $('bList').classList.toggle('on', drawers.list.classList.contains('open')); $('bSet').classList.toggle('on', drawers.set.classList.contains('open')); }
-  $('bList').onclick = () => openDrawer('list'); $('bSet').onclick = () => openDrawer('set');
+  const drawers = { list: document.getElementById('dList'), set: document.getElementById('dSet') };
+  function openDrawer(k) { Object.keys(drawers).forEach(n => drawers[n].classList.toggle('open', n === k && !drawers[n].classList.contains('open'))); document.getElementById('bList').classList.toggle('on', drawers.list.classList.contains('open')); document.getElementById('bSet').classList.toggle('on', drawers.set.classList.contains('open')); }
+  document.getElementById('bList').onclick = () => openDrawer('list'); document.getElementById('bSet').onclick = () => openDrawer('set');
   document.querySelectorAll('[data-close]').forEach(b => { b.onclick = () => openDrawer(null); });
 
   // drag & drop
   let dragN = 0;
-  addEventListener('dragenter', e => { e.preventDefault(); dragN++; $('drop').classList.add('show'); });
-  addEventListener('dragleave', () => { if (--dragN <= 0) { dragN = 0; $('drop').classList.remove('show'); } });
+  addEventListener('dragenter', e => { e.preventDefault(); dragN++; document.getElementById('drop').classList.add('show'); });
+  addEventListener('dragleave', () => { if (--dragN <= 0) { dragN = 0; document.getElementById('drop').classList.remove('show'); } });
   addEventListener('dragover', e => e.preventDefault());
-  addEventListener('drop', e => { e.preventDefault(); dragN = 0; $('drop').classList.remove('show'); addFiles(e.dataTransfer.files); });
+  addEventListener('drop', e => { e.preventDefault(); dragN = 0; document.getElementById('drop').classList.remove('show'); addFiles(e.dataTransfer.files); });
 
   // settings
   function applyColor(hex) {
@@ -556,12 +555,12 @@ html.matrix .drop{background:rgba(2,15,6,.92);border-color:#00ff41;color:#00ff41
   }
   document.querySelectorAll('.sw').forEach(b => { b.onclick = () => { applyColor(b.dataset.c); save(); }; });
   function bind(id, key, fn) {
-    const el = $(id), out = $(id + 'V'); el.value = prefs[key];
+    const el = document.getElementById(id), out = document.getElementById(id + 'V'); el.value = prefs[key];
     const f = () => { const v = +el.value; prefs[key] = v; fn(v); out.textContent = v.toFixed(2); save(); };
     el.addEventListener('input', f); f();
   }
   bind('sSens', 'sens', v => { sens = v; }); bind('sCrk', 'crackle', v => { CRACKLE = v; }); bind('sHov', 'hover', v => { HOVER = v; });
-  const qualityEl = $('sQuality');
+  const qualityEl = document.getElementById('sQuality');
   function applyQuality(value) {
     quality = value;
     const ratio = quality === 'performance' ? 1 : quality === 'high' ? 1.5 : 2;
@@ -587,7 +586,7 @@ html.matrix .drop{background:rgba(2,15,6,.92);border-color:#00ff41;color:#00ff41
     else if (k === 'arrowright') doSeek(tNow() + 5); else if (k === 'arrowleft') doSeek(tNow() - 5);
     else if (k === 'arrowup') bump(5); else if (k === 'arrowdown') bump(-5);
     else if (k === 'n') step(1); else if (k === 'p') prev();
-    else if (k === 'm') $('mute').click(); else if (k === 'f') $('full').click();
+    else if (k === 'm') document.getElementById('mute').click(); else if (k === 'f') document.getElementById('full').click();
     else if (k === 'l') openDrawer('list'); else if (k === 's') openDrawer('set');
     else if (k.length === 1 && '1234567'.includes(k)) modeBtns[+k - 1].click();
     else return;
