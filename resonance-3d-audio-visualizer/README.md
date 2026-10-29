@@ -4,12 +4,12 @@ A browser-based audio visualizer that turns audio into animated 3D visuals.
 
 ## Features
 
-- Seven visual modes: Wave, Bars, Circle, Particles, Sphere, Liquid Sphere, and J.A.R.V.I.S.-inspired holographic equalizer
+- Six visual modes: Wave, Bars, Circle, Particles, Sphere, and Liquid Sphere
 - Load local audio files into a playlist
 - Live microphone visualization (with browser permission)
 - Playback controls, seeking, volume, shuffle, and repeat
 - Color themes including Matrix green, audio sensitivity, and rendering quality presets (Performance, High, Ultra)
-- Keyboard shortcuts (1–7 select visualization modes)
+- Keyboard shortcuts (1–6 select visualization modes)
 - Responsive interface
 - Saves visual preferences in the browser
 
