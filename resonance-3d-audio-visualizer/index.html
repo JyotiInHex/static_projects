@@ -331,6 +331,7 @@ html.matrix .drop{background:rgba(2,15,6,.92);border-color:#00ff41;color:#00ff41
 
   const CAMS = { wave: [0, 14, 30, 0, 1, -2], bars: [0, 2, 34, 0, 0, 0], circle: [0, 0, 36, 0, 0, 0], particles: [0, 0, 32, 0, 0, 0], sphere: [0, 0, 38, 0, 0, 0], liquidSphere: [0, 0, 27, 0, 0, 0], jarvis: [0, 0, 32, 0, 0, 0] };
   const look = new THREE.Vector3(0, 1, -2), camGoal = new THREE.Vector3(), lookGoal = new THREE.Vector3();
+  const $ = id => document.getElementById(id);
   const modeBtns = document.querySelectorAll('.modes button');
   function setMode(m) {
     mode = m;
@@ -376,7 +377,6 @@ html.matrix .drop{background:rgba(2,15,6,.92);border-color:#00ff41;color:#00ff41
   }
 
   // ---------- App: audio engine, playlist, settings ----------
-  const $ = id => document.getElementById(id);
   const ic = n => '<svg class="i"><use href="#i-' + n + '"/></svg>';
   const prefs = Object.assign({ mode: 'liquidSphere', color: '#00FF41', sens: 1.7, crackle: 0.85, hover: 0.7, vol: 0.8, quality: 'ultra' }, (() => { try { return JSON.parse(localStorage.getItem('resonance') || '{}'); } catch (e) { return {}; } })());
   const save = () => { try { localStorage.setItem('resonance', JSON.stringify(prefs)); } catch (e) {} };
