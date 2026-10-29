@@ -335,7 +335,7 @@ html.matrix .drop{background:rgba(2,15,6,.92);border-color:#00ff41;color:#00ff41
   const modeBtns = document.querySelectorAll('.modes button');
   function setMode(m) {
     mode = m;
-    waveObj.visible = m === 'wave'; bars.visible = m === 'bars'; circ.visible = m === 'circle'; pts.visible = m === 'particles'; ball.visible = m === 'sphere'; liquid.visible = m === 'liquidSphere'; jarvis.visible = m === 'jarvis'; $('jarvisHud').classList.toggle('show', m === 'jarvis');
+    waveObj.visible = m === 'wave'; bars.visible = m === 'bars'; circ.visible = m === 'circle'; pts.visible = m === 'particles'; ball.visible = m === 'sphere'; liquid.visible = m === 'liquidSphere'; jarvis.visible = m === 'jarvis'; document.getElementById('jarvisHud').classList.toggle('show', m === 'jarvis');
     modeBtns.forEach(b => b.classList.toggle('on', b.dataset.m === m));
   }
   modeBtns.forEach(b => { b.onclick = () => setMode(b.dataset.m); });
