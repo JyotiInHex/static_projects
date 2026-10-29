@@ -69,6 +69,20 @@ kbd{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1p
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 190px);transform:translate(-50%,8px);z-index:9;background:var(--ink);color:#fff;font-size:13px;padding:9px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
 @media(max-width:760px){.modes{order:3;width:100%;justify-content:center}.acts{flex:none}.drawer{top:calc(env(safe-area-inset-top,0px) + 112px)}}
 @media(max-width:600px){.vol{display:none}.card{padding:22px}}
+.fld select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);font:inherit}
+.modes{flex-wrap:wrap}.modes button{padding:7px 10px}
+html.matrix{color-scheme:dark;--ink:#d7ffe0;--muted:#78a887;--line:#164525;--accent:#00ff41}
+html.matrix,html.matrix body{background:#020b04;color:var(--ink)}
+html.matrix .modes{background:#061b0b}
+html.matrix .modes button.on{background:#0d2b14;color:#e1ffe8;box-shadow:0 1px 3px rgba(0,0,0,.45)}
+html.matrix .ib:hover,html.matrix #plist li:hover{background:#0b2911;color:#d7ffe0}
+html.matrix .ib.on,html.matrix #plist li.on{background:#0c3216;color:#00ff41}
+html.matrix .player,html.matrix .drawer,html.matrix .card{background:rgba(2,15,6,.94);border-color:#164525;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+html.matrix .btn{background:#0b2911;color:#d7ffe0}html.matrix .btn:hover{background:#12401c}
+html.matrix .btn.pri,html.matrix .play,html.matrix .logo,html.matrix .big{background:#00b832;color:#001a07}
+html.matrix kbd{background:#0b2911;border-color:#164525;color:#d7ffe0}
+html.matrix .fld select{background:#061b0b;color:#d7ffe0;border-color:#164525}
+html.matrix .drop{background:rgba(2,15,6,.92);border-color:#00ff41;color:#00ff41}
 </style>
 </head>
 <body>
@@ -76,7 +90,7 @@ kbd{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1p
 <div id="stage"></div>
 <header class="top">
   <div class="brand"><span class="logo"><svg class="i"><use href="#i-wave"/></svg></span>Resonance</div>
-  <nav class="modes"><button data-m="wave">Wave</button><button data-m="bars">Bars</button><button data-m="circle">Circle</button><button data-m="particles">Particles</button><button data-m="sphere">Sphere</button></nav>
+  <nav class="modes"><button data-m="wave">Wave</button><button data-m="bars">Bars</button><button data-m="circle">Circle</button><button data-m="particles">Particles</button><button data-m="sphere">Sphere</button><button data-m="liquidSphere">Liquid</button></nav>
   <div class="acts"><button class="ib" id="bList" title="Playlist (L)"><svg class="i"><use href="#i-list"/></svg></button><button class="ib" id="bSet" title="Settings (S)"><svg class="i"><use href="#i-set"/></svg></button><button class="ib" id="full" title="Fullscreen (F)"><svg class="i"><use href="#i-full"/></svg></button></div>
 </header>
 <div class="empty" id="empty"><div class="card">
@@ -86,9 +100,9 @@ kbd{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1p
 </div></div>
 <aside class="drawer" id="dList"><div class="dh"><span>Playlist<small id="count">0 tracks</small></span><button class="ib" data-close><svg class="i"><use href="#i-x"/></svg></button></div><ul id="plist"></ul><div class="df"><button class="btn pri" id="add">Add files</button><button class="btn" id="clear">Clear</button></div></aside>
 <aside class="drawer" id="dSet"><div class="dh"><span>Settings</span><button class="ib" data-close><svg class="i"><use href="#i-x"/></svg></button></div><div class="db">
-  <div class="fld"><label>Color</label><div class="sws"><button class="sw" data-c="#4f46e5" style="background:#4f46e5" title="#4f46e5"></button><button class="sw" data-c="#F25BD0" style="background:#F25BD0" title="#F25BD0"></button><button class="sw" data-c="#0d9488" style="background:#0d9488" title="#0d9488"></button><button class="sw" data-c="#f97316" style="background:#f97316" title="#f97316"></button><button class="sw" data-c="#0ea5e9" style="background:#0ea5e9" title="#0ea5e9"></button></div></div>
-  <div class="fld"><label>Sensitivity<span id="sSensV"></span></label><input class="rng" id="sSens" type="range" min="0.5" max="2" step="0.05"></div><div class="fld"><label>Sphere crackle<span id="sCrkV"></span></label><input class="rng" id="sCrk" type="range" min="0" max="1" step="0.05"></div><div class="fld"><label>Sphere hover strength<span id="sHovV"></span></label><input class="rng" id="sHov" type="range" min="0" max="1" step="0.05"></div>
-  <div class="keys"><kbd>Space</kbd> play/pause &nbsp;<kbd>←</kbd><kbd>→</kbd> seek 5s<br><kbd>↑</kbd><kbd>↓</kbd> volume &nbsp;<kbd>M</kbd> mute<br><kbd>N</kbd> next &nbsp;<kbd>P</kbd> previous<br><kbd>1</kbd>–<kbd>5</kbd> visual mode<br><kbd>L</kbd> playlist &nbsp;<kbd>S</kbd> settings &nbsp;<kbd>F</kbd> fullscreen</div>
+  <div class="fld"><label>Color</label><div class="sws"><button class="sw" data-c="#4f46e5" style="background:#4f46e5" title="#4f46e5"></button><button class="sw" data-c="#F25BD0" style="background:#F25BD0" title="#F25BD0"></button><button class="sw" data-c="#0d9488" style="background:#0d9488" title="#0d9488"></button><button class="sw" data-c="#f97316" style="background:#f97316" title="#f97316"></button><button class="sw" data-c="#0ea5e9" style="background:#0ea5e9" title="#0ea5e9"></button><button class="sw" data-c="#00FF41" style="background:#00FF41" title="Matrix green"></button></div></div>
+  <div class="fld"><label>Sensitivity<span id="sSensV"></span></label><input class="rng" id="sSens" type="range" min="0.5" max="2" step="0.05"></div><div class="fld"><label>Sphere crackle<span id="sCrkV"></span></label><input class="rng" id="sCrk" type="range" min="0" max="1" step="0.05"></div><div class="fld"><label>Sphere hover strength<span id="sHovV"></span></label><input class="rng" id="sHov" type="range" min="0" max="1" step="0.05"></div><div class="fld"><label for="sQuality">Rendering quality</label><select id="sQuality"><option value="performance">Performance</option><option value="high">High</option><option value="ultra">Ultra</option></select></div>
+  <div class="keys"><kbd>Space</kbd> play/pause &nbsp;<kbd>←</kbd><kbd>→</kbd> seek 5s<br><kbd>↑</kbd><kbd>↓</kbd> volume &nbsp;<kbd>M</kbd> mute<br><kbd>N</kbd> next &nbsp;<kbd>P</kbd> previous<br><kbd>1</kbd>–<kbd>6</kbd> visual mode<br><kbd>L</kbd> playlist &nbsp;<kbd>S</kbd> settings &nbsp;<kbd>F</kbd> fullscreen</div>
 </div></aside>
 <footer class="player">
   <div class="name" id="name">No track loaded</div>
@@ -109,6 +123,7 @@ kbd{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1p
   const COLS = 64, ROWS = 40, W = 40, D = 24, MAX_H = 9;
   const stage = document.getElementById('stage');
   const renderer = new THREE.WebGLRenderer({ antialias: true });
+  let quality = "ultra";
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.setClearColor(0xffffff, 1);
   stage.appendChild(renderer.domElement);
@@ -205,6 +220,44 @@ kbd{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1p
   ball.add(ballPts, ...rings);
   scene.add(ball);
 
+  // Liquid Sphere: a deformable mesh driven by the existing analyser/spec data.
+  const LIQUID_RADIUS = 8;
+  const liquidGeo = new THREE.SphereGeometry(LIQUID_RADIUS, 96, 64);
+  const liquidBase = new Float32Array(liquidGeo.attributes.position.array);
+  const liquidMat = new THREE.MeshPhongMaterial({ color: 0x00ff41, emissive: 0x003b10, specular: 0x99ffbb, shininess: 90 });
+  const liquidMesh = new THREE.Mesh(liquidGeo, liquidMat);
+  const liquidWire = new THREE.Mesh(liquidGeo, new THREE.MeshBasicMaterial({ color: 0x70ff92, wireframe: true, transparent: true, opacity: 0.12 }));
+  const liquid = new THREE.Group();
+  liquid.add(liquidMesh, liquidWire);
+  liquid.visible = false;
+  scene.add(liquid);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.72));
+  const liquidLight = new THREE.PointLight(0x70ff92, 1.7, 45);
+  liquidLight.position.set(-8, 10, 12);
+  scene.add(liquidLight);
+
+  function updateLiquid(time) {
+    liquid.rotation.y = time * 0.00022;
+    liquid.rotation.x = Math.sin(time * 0.00025) * 0.12;
+    const positions = liquidGeo.attributes.position.array;
+    for (let i = 0; i < positions.length; i += 3) {
+      const x = liquidBase[i], y = liquidBase[i + 1], z = liquidBase[i + 2];
+      const yn = y / LIQUID_RADIUS;
+      const angle = Math.atan2(z, x);
+      const wave = Math.sin(angle * 3 + time * 0.0005) * 0.5 + 0.5;
+      const bin = Math.max(0, Math.min(spec.length - 1, Math.floor((Math.abs(yn) * 0.65 + wave * 0.35) * (spec.length - 1))));
+      const v = spec[bin];
+      const ripple = Math.sin(angle * 5 + time * 0.0012) * 0.16 + Math.cos(yn * 9 - time * 0.001) * 0.12;
+      const radius = LIQUID_RADIUS + ripple + v * (1.8 * sens);
+      const scale = radius / LIQUID_RADIUS;
+      positions[i] = x * scale; positions[i + 1] = y * scale; positions[i + 2] = z * scale;
+    }
+    liquidGeo.attributes.position.needsUpdate = true;
+    liquidGeo.computeVertexNormals();
+    liquidMesh.material.emissiveIntensity = 0.2 + spec[31] * 0.9;
+    liquidLight.intensity = 1.2 + spec[31] * 2;
+  }
+
   const ptr = new THREE.Vector2(9, 9), ray = new THREE.Raycaster(), sph = new THREE.Sphere(new THREE.Vector3(), BALL_R * 1.15), hit = new THREE.Vector3();
   let hover = 0;
   renderer.domElement.addEventListener('pointermove', e => ptr.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1));
@@ -237,12 +290,12 @@ kbd{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1p
     bGeo.attributes.position.needsUpdate = true; bGeo.attributes.color.needsUpdate = true;
   }
 
-  const CAMS = { wave: [0, 14, 30, 0, 1, -2], bars: [0, 2, 34, 0, 0, 0], circle: [0, 0, 36, 0, 0, 0], particles: [0, 0, 32, 0, 0, 0], sphere: [0, 0, 38, 0, 0, 0] };
+  const CAMS = { wave: [0, 14, 30, 0, 1, -2], bars: [0, 2, 34, 0, 0, 0], circle: [0, 0, 36, 0, 0, 0], particles: [0, 0, 32, 0, 0, 0], sphere: [0, 0, 38, 0, 0, 0], liquidSphere: [0, 0, 27, 0, 0, 0] };
   const look = new THREE.Vector3(0, 1, -2), camGoal = new THREE.Vector3(), lookGoal = new THREE.Vector3();
   const modeBtns = document.querySelectorAll('.modes button');
   function setMode(m) {
     mode = m;
-    waveObj.visible = m === 'wave'; bars.visible = m === 'bars'; circ.visible = m === 'circle'; pts.visible = m === 'particles'; ball.visible = m === 'sphere';
+    waveObj.visible = m === 'wave'; bars.visible = m === 'bars'; circ.visible = m === 'circle'; pts.visible = m === 'particles'; ball.visible = m === 'sphere'; liquid.visible = m === 'liquidSphere';
     modeBtns.forEach(b => b.classList.toggle('on', b.dataset.m === m));
   }
   modeBtns.forEach(b => { b.onclick = () => setMode(b.dataset.m); });
@@ -275,6 +328,7 @@ kbd{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1p
       pGeo.attributes.position.needsUpdate = true; pGeo.attributes.color.needsUpdate = true;
     }
     if (mode === 'sphere') updateBall(time);
+    else if (mode === 'liquidSphere') updateLiquid(time);
     const c = CAMS[mode], k = innerWidth / innerHeight < 0.8 ? 1.5 : 1;
     camera.position.lerp(camGoal.set(c[0], c[1], c[2] * k), 0.08);
     look.lerp(lookGoal.set(c[3], c[4], c[5]), 0.08);
@@ -284,7 +338,7 @@ kbd{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1p
   // ---------- App: audio engine, playlist, settings ----------
   const $ = id => document.getElementById(id);
   const ic = n => '<svg class="i"><use href="#i-' + n + '"/></svg>';
-  const prefs = Object.assign({ mode: 'wave', color: '#4f46e5', sens: 1, crackle: 0.85, hover: 0.7, vol: 0.8 }, (() => { try { return JSON.parse(localStorage.getItem('resonance') || '{}'); } catch (e) { return {}; } })());
+  const prefs = Object.assign({ mode: 'liquidSphere', color: '#00FF41', sens: 1.7, crackle: 0.85, hover: 0.7, vol: 0.8, quality: 'ultra' }, (() => { try { return JSON.parse(localStorage.getItem('resonance') || '{}'); } catch (e) { return {}; } })());
   const save = () => { try { localStorage.setItem('resonance', JSON.stringify(prefs)); } catch (e) {} };
   let ctx, analyser, gain, data, buffer, src, micStream, micNode;
   let state = 'idle'; // idle | playing | paused | ended | mic
@@ -445,6 +499,16 @@ kbd{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1p
   // settings
   function applyColor(hex) {
     prefs.color = hex; const h = {};
+    const matrix = hex.toLowerCase() === '#00ff41';
+    document.documentElement.classList.toggle('matrix', matrix);
+    renderer.setClearColor(matrix ? 0x020b04 : 0xffffff, 1);
+    scene.fog.color.set(matrix ? 0x020b04 : 0xffffff);
+    cLow.set(matrix ? 0x073b17 : 0xcbd5e1);
+    sparkCol.set(matrix ? 0x9cffb2 : 0x06b6d4);
+    liquidMat.color.set(matrix ? 0x00ff41 : hex);
+    liquidMat.emissive.set(matrix ? 0x003b10 : hex).multiplyScalar(matrix ? 1 : 0.12);
+    liquidWire.material.color.set(matrix ? 0x70ff92 : hex);
+    rings.forEach(r => r.material.color.set(matrix ? 0x1d8f3a : 0xc7d2fe));
     cMid.set(hex); cMid.getHSL(h); cHigh.setHSL((h.h + 0.12) % 1, h.s, h.l);
     baseCol.set(hex); loudCol.setHSL((h.h + 0.82) % 1, h.s, Math.max(h.l - 0.12, 0.25));
     document.documentElement.style.setProperty('--accent', hex);
@@ -457,6 +521,21 @@ kbd{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1p
     el.addEventListener('input', f); f();
   }
   bind('sSens', 'sens', v => { sens = v; }); bind('sCrk', 'crackle', v => { CRACKLE = v; }); bind('sHov', 'hover', v => { HOVER = v; });
+  const qualityEl = $('sQuality');
+  function applyQuality(value) {
+    quality = value;
+    const ratio = quality === 'performance' ? 1 : quality === 'high' ? 1.5 : 2;
+    renderer.setPixelRatio(Math.min(devicePixelRatio, ratio));
+    renderer.setSize(innerWidth, innerHeight);
+    pts.material.size = quality === 'performance' ? 0.38 : quality === 'high' ? 0.44 : 0.5;
+    ballPts.material.size = quality === 'performance' ? 0.22 : quality === 'high' ? 0.25 : 0.28;
+    prefs.quality = quality;
+    qualityEl.value = quality;
+    save();
+  }
+  qualityEl.value = prefs.quality || 'ultra';
+  qualityEl.addEventListener('change', () => applyQuality(qualityEl.value));
+  applyQuality(qualityEl.value);
   modeBtns.forEach(b => b.addEventListener('click', () => { prefs.mode = b.dataset.m; save(); }));
 
   // keyboard & focus handling
@@ -470,7 +549,7 @@ kbd{background:#f1f5f9;border:1px solid var(--line);border-radius:5px;padding:1p
     else if (k === 'n') step(1); else if (k === 'p') prev();
     else if (k === 'm') $('mute').click(); else if (k === 'f') $('full').click();
     else if (k === 'l') openDrawer('list'); else if (k === 's') openDrawer('set');
-    else if (k.length === 1 && '12345'.includes(k)) modeBtns[+k - 1].click();
+    else if (k.length === 1 && '123456'.includes(k)) modeBtns[+k - 1].click();
     else return;
     e.preventDefault();
   });
