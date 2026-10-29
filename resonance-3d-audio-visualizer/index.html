@@ -510,7 +510,7 @@ html.matrix .drop{background:rgba(2,15,6,.92);border-color:#00ff41;color:#00ff41
     liquidWire.material.color.set(matrix ? 0x70ff92 : hex);
     rings.forEach(r => r.material.color.set(matrix ? 0x1d8f3a : 0xc7d2fe));
     cMid.set(hex); cMid.getHSL(h); cHigh.setHSL((h.h + 0.12) % 1, h.s, h.l);
-    baseCol.set(hex); loudCol.setHSL((h.h + 0.82) % 1, h.s, Math.max(h.l - 0.12, 0.25));
+    baseCol.set(hex); loudCol.setHSL(matrix ? h.h : (h.h + 0.82) % 1, h.s, Math.max(h.l - 0.12, 0.25));
     document.documentElement.style.setProperty('--accent', hex);
     document.querySelectorAll('.sw').forEach(b => b.classList.toggle('on', b.dataset.c.toLowerCase() === hex.toLowerCase()));
   }
