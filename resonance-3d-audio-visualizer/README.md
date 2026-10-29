@@ -13,9 +13,21 @@ A browser-based audio visualizer that turns audio into animated 3D visuals.
 - Responsive interface
 - Saves visual preferences in the browser
 
+## Project structure
+
+```text
+resonance-3d-audio-visualizer/
+├── index.html
+├── css/
+│   └── style.css
+├── js/
+│   └── app.js
+└── README.md
+```
+
 ## Run locally
 
-1. Open `index.html` in a modern browser, or serve this folder with a local static server.
+Open `index.html` in a modern browser. No build step, npm, or backend is required.
 2. Choose an audio file or drag an audio file onto the page.
 3. Select a visual mode from the top navigation.
 4. Use Settings to adjust the color theme, sensitivity, and rendering quality.
