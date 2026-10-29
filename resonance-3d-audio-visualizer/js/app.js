@@ -100,6 +100,38 @@
   ball.add(ballPts, ...rings);
   scene.add(ball);
 
+  const ptr = new THREE.Vector2(9, 9), ray = new THREE.Raycaster(), sph = new THREE.Sphere(new THREE.Vector3(), BALL_R * 1.15), hit = new THREE.Vector3();
+  let hover = 0;
+  renderer.domElement.addEventListener('pointermove', e => ptr.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1));
+  renderer.domElement.addEventListener('pointerleave', () => ptr.set(9, 9));
+
+  function updateBall(time) {
+    ball.rotation.set(0.35, time * 0.0002, 0);
+    ball.scale.setScalar(1 + spec[31] * 0.1);
+    rings[0].rotation.z = time * 0.0005; rings[1].rotation.z = -time * 0.0004;
+    ball.updateMatrixWorld();
+    ray.setFromCamera(ptr, camera);
+    const on = !!ray.ray.intersectSphere(sph, hit);
+    if (on) ball.worldToLocal(hit);
+    hover += ((on ? 1 : 0) - hover) * 0.1;
+    for (let i = 0; i < NB; i++) {
+      const v = spec[bIdx[i]], k3 = i * 3;
+      if (spark[i] > 0.02) spark[i] *= 0.9; else spark[i] = Math.random() < 0.002 * CRACKLE * (1 + v * 4) ? 1 : 0;
+      const r = baseR[i] + v * 5 * (i < SHELL ? 1 : 0.45) + spark[i] * 0.5;
+      let x = dir[k3] * r, y = dir[k3 + 1] * r, z = dir[k3 + 2] * r;
+      if (hover > 0.01) {
+        const dx = x - hit.x, dy = y - hit.y, dz = z - hit.z, d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        if (d < 4) { const p = Math.pow(1 - d / 4, 2) * HOVER * hover * 3.5; x += dir[k3] * p; y += dir[k3 + 1] * p; z += dir[k3 + 2] * p; }
+      }
+      bPos[k3] = x; bPos[k3 + 1] = y; bPos[k3 + 2] = z;
+      tmp.copy(baseCol).lerp(loudCol, Math.min(v * 1.3, 1));
+      if (spark[i] > 0) tmp.lerp(sparkCol, spark[i]);
+      if (i >= SHELL) tmp.lerp(white, 0.45);
+      bCol[k3] = tmp.r; bCol[k3 + 1] = tmp.g; bCol[k3 + 2] = tmp.b;
+    }
+    bGeo.attributes.position.needsUpdate = true; bGeo.attributes.color.needsUpdate = true;
+  }
+
   // Liquid Sphere: a deformable mesh driven by the existing analyser/spec data.
   const LIQUID_RADIUS = 8;
   const liquidGeo = new THREE.SphereGeometry(LIQUID_RADIUS, 72, 48);
