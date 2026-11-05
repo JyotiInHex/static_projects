@@ -1,0 +1,14 @@
+{
+  "name": "static-projects-gallery",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Static project gallery and independent frontend experiments",
+  "scripts": {
+    "validate:projects": "node scripts/validate-projects.mjs",
+    "build:css": "tailwindcss -i ./src/input.css -o ./assets/css/styles.css --minify",
+    "build": "npm run validate:projects && npm run build:css"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.17"
+  }
+}
