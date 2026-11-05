@@ -8,9 +8,13 @@
       "path": "./resonance-3d-audio-visualizer/",
       "demo": "./resonance-3d-audio-visualizer/",
       "source": "https://github.com/JyotiInHex/static_projects/tree/main/resonance-3d-audio-visualizer",
+      "preview": "./assets/resonance-preview.svg",
+      "previewAlt": "Resonance 3D audio visualizer interface preview",
       "type": "Creative coding",
       "year": "2026",
       "mark": "〰",
+      "featured": true,
+      "status": "Available",
       "categories": ["Three.js", "JavaScript", "Experiments"],
       "technologies": ["HTML", "CSS", "JavaScript", "Three.js", "Web Audio API"]
     }
