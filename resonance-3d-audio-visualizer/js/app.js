@@ -301,6 +301,7 @@
 
   async function go(i) {
     if (i < 0 || i >= list.length) return false;
+    if (youtubeActive) window.resonanceYouTube?.deactivate();
     ensureAudio(); stopMic();
     const my = ++token; cur = i; renderList(); setName('Loading…');
     try {
@@ -347,6 +348,7 @@
     state = 'idle'; applyGain(); refresh();
   }
   async function toggleMic() {
+    if (youtubeActive) window.resonanceYouTube?.deactivate();
     if (micStream) { setName(list[cur] ? list[cur].name : 'No track loaded'); return stopMic(); }
     try {
       ensureAudio();
