@@ -1,30 +1,57 @@
 # Static Projects
 
-A collection of my **static websites, mini projects, UI experiments, and frontend experiments**.
+A curated collection of frontend experiments, interactive interfaces and creative web projects by **Parag Jyoti Das**.
 
-I use this repository to publish and organize small projects built with:
+This repository keeps each project independent and easy to explore. The root homepage is a lightweight project index; individual projects live in their own folders.
 
-- HTML
-- CSS
-- JavaScript
-- Three.js
-- GSAP
-- Canvas, Web APIs, animations, and other related frontend technologies
+## Explore
 
-These projects are mainly for learning, testing ideas, experimenting with interactions and visuals, and trying out new techniques. They are not intended to represent large production applications.
+- **Project gallery:** [Open the GitHub Pages site](https://JyotiInHex.github.io/static_projects/) (available once Pages deployment is configured and successful)
+- **Source code:** [Browse this repository](https://github.com/JyotiInHex/static_projects)
 
-## Projects
+## Current projects
 
 | Project | Description | Technologies |
-|---|---|---|
-| [Resonance — 3D Audio Visualizer](./resonance-3d-audio-visualizer/) | A browser-based audio visualizer with multiple 3D modes and local audio playback. | HTML, CSS, JavaScript, Three.js, Web Audio API |
+| --- | --- | --- |
+| [Resonance — 3D Audio Visualizer](./resonance-3d-audio-visualizer/) | Browser-based audio visualizer with six 3D modes, local audio playback and microphone input. | HTML, CSS, JavaScript, Three.js, Web Audio API |
 
-## Running a project
+## Repository structure
 
-Open the project's `index.html` in a modern browser. If a project uses browser APIs that require a secure context, run it with a local development server.
+```text
+static_projects/
+├── index.html             # Project gallery homepage
+├── projects.json          # Project metadata used by the gallery
+├── favicon.svg
+├── assets/                # Shared static assets
+└── project-folder/        # One independent folder per project
+```
 
-## Repository purpose
+## Add a project
 
-This repository is reserved for **static and mini projects, prototypes, experiments, and learning exercises** using HTML, CSS, JavaScript, Three.js, GSAP, and similar web technologies.
+1. Create a descriptive, lowercase folder at the repository root.
+2. Put the project's entry page at `<folder>/index.html`.
+3. Add a project-specific `README.md` with features, technologies and run instructions.
+4. Add an entry to `projects.json` using the existing schema.
+5. Keep project-specific CSS, JavaScript and media inside that folder.
 
-Each project should ideally live in its own clearly named folder and include a short project-specific README when useful.
+The gallery reads `projects.json` at runtime. Use relative paths (for example, `./my-project/`) so it works under the GitHub Pages repository subpath.
+
+## Local preview
+
+Because the homepage loads `projects.json` using `fetch()`, serve the repository root with a local HTTP server rather than opening `index.html` directly.
+
+For example:
+
+```bash
+python -m http.server 8000
+```
+
+Then visit `http://localhost:8000`.
+
+## Styling
+
+The gallery currently uses Tailwind CSS utilities through the Tailwind CDN for a no-build static setup. For a production deployment with a compiled, purged stylesheet, a build pipeline can be introduced as a separate improvement.
+
+## Scope
+
+This repository is for static sites, mini-apps, prototypes, UI experiments and learning projects. It is not intended to be a monolithic application.
