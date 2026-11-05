@@ -15,8 +15,27 @@
       "mark": "〰",
       "featured": true,
       "status": "Available",
-      "categories": ["Three.js", "JavaScript", "Experiments"],
-      "technologies": ["HTML", "CSS", "JavaScript", "Three.js", "Web Audio API"]
+      "categories": [
+        "Three.js",
+        "JavaScript",
+        "Experiments"
+      ],
+      "technologies": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "Three.js",
+        "Web Audio API"
+      ],
+      "detailPath": "./projects/resonance-3d-audio-visualizer/",
+      "features": [
+        "Six visualization modes",
+        "Local audio playback and playlist",
+        "Microphone input",
+        "Real-time 3D audio-reactive visuals",
+        "Rendering quality controls"
+      ],
+      "summary": "A browser-based audio visualizer exploring real-time audio analysis and expressive 3D graphics."
     }
   ]
 }
