@@ -378,6 +378,7 @@
       youtubeDuration = Number(d.duration) || youtubeDuration || 0;
       youtubeTime = Number(d.currentTime) || 0;
       state = d.playing ? 'playing' : 'paused';
+      window.resonanceYouTube?.setVolume(muted ? 0 : vol * 100);
       if (d.title) setName(d.title);
       document.getElementById('dur').textContent = fmt(youtubeDuration);
       document.getElementById('cur').textContent = fmt(youtubeTime);
