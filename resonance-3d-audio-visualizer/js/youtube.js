@@ -106,6 +106,11 @@
   });
 
   window.resonanceYouTube = {
+    deactivate: function () {
+      stopPolling();
+      if (player && typeof player.stopVideo === 'function') player.stopVideo();
+      emit('resonance:youtube', { active: false });
+    },
     toggle: function () {
       if (!player) return;
       if (player.getPlayerState() === YT.PlayerState.PLAYING) player.pauseVideo();
