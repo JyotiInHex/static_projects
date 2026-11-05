@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "projects": [
+    {
+      "slug": "resonance-3d-audio-visualizer",
+      "title": "Resonance — 3D Audio Visualizer",
+      "description": "Turn local audio into responsive 3D visuals with six visualization modes, microphone input and a built-in playlist.",
+      "path": "./resonance-3d-audio-visualizer/",
+      "demo": "./resonance-3d-audio-visualizer/",
+      "source": "https://github.com/JyotiInHex/static_projects/tree/main/resonance-3d-audio-visualizer",
+      "type": "Creative coding",
+      "year": "2026",
+      "mark": "〰",
+      "categories": ["Three.js", "JavaScript", "Experiments"],
+      "technologies": ["HTML", "CSS", "JavaScript", "Three.js", "Web Audio API"]
+    }
+  ]
+}
