@@ -1,57 +1,141 @@
+<div align="center">
+
 # Static Projects
 
-A curated collection of frontend experiments, interactive interfaces and creative web projects by **Parag Jyoti Das**.
+### A collection of ideas, experiments and small digital products.
 
-This repository keeps each project independent and easy to explore. The root homepage is a lightweight project index; individual projects live in their own folders.
+**By [Parag Jyoti Das](https://github.com/JyotiInHex)** · Frontend development · UI/UX · Creative coding
 
-## Explore
+[![Open gallery](https://img.shields.io/badge/Explore-Project%20Gallery-5269e8?style=for-the-badge)](https://jyotiinhex.github.io/static_projects/)
+[![GitHub repository](https://img.shields.io/badge/Source-GitHub-17191d?style=for-the-badge&logo=github)](https://github.com/JyotiInHex/static_projects)
 
-- **Project gallery:** [Open the GitHub Pages site](https://JyotiInHex.github.io/static_projects/) (available once Pages deployment is configured and successful)
-- **Source code:** [Browse this repository](https://github.com/JyotiInHex/static_projects)
+</div>
 
-## Current projects
+---
 
-| Project | Description | Technologies |
-| --- | --- | --- |
-| [Resonance — 3D Audio Visualizer](./resonance-3d-audio-visualizer/) | Browser-based audio visualizer with six 3D modes, local audio playback and microphone input. | HTML, CSS, JavaScript, Three.js, Web Audio API |
+## About this collection
+
+This repository is a home for independent web projects, frontend experiments and interactive interfaces. Each project lives in its own folder, with its own code and purpose.
+
+The goal is simple: build useful things, explore what the browser can do, and keep every experiment easy to discover, run and improve.
+
+## Project gallery
+
+The gallery is powered by a small project registry and is published with GitHub Pages.
+
+**[Browse all projects →](https://jyotiinhex.github.io/static_projects/)**
+
+## Featured project
+
+### [Resonance — 3D Audio Visualizer](./resonance-3d-audio-visualizer/)
+
+A browser-based audio visualizer that turns supported audio input into expressive 3D experiences.
+
+<div align="center">
+  <a href="./resonance-3d-audio-visualizer/">
+    <img src="./assets/resonance-preview.svg" alt="Resonance 3D Audio Visualizer preview" width="100%">
+  </a>
+</div>
+
+**Highlights**
+- Six visualization modes: Wave, Bars, Circle, Particles, Sphere and Liquid.
+- Local audio-file playback with a playlist.
+- Live microphone input.
+- Adjustable visualization sensitivity and rendering quality.
+
+**Built with:** HTML · CSS · JavaScript · Three.js · Web Audio API
+
+[**Open live experience →**](https://jyotiinhex.github.io/static_projects/resonance-3d-audio-visualizer/) · [View source](./resonance-3d-audio-visualizer/)
 
 ## Repository structure
 
 ```text
 static_projects/
-├── index.html             # Project gallery homepage
-├── projects.json          # Project metadata used by the gallery
-├── favicon.svg
-├── assets/                # Shared static assets
-└── project-folder/        # One independent folder per project
+├── index.html             # Project collection homepage
+├── projects.json          # Project metadata and gallery registry
+├── favicon.svg            # Site favicon
+├── assets/                # Shared visual assets
+├── scripts/               # Validation and project tooling
+├── src/                   # Build source files
+└── project-folder/        # Independent project
+    ├── index.html
+    ├── README.md
+    ├── css/
+    ├── js/
+    └── assets/
 ```
+
+Each project should remain self-contained. Shared files belong at the repository root only when multiple projects genuinely use them.
 
 ## Add a project
 
 1. Create a descriptive, lowercase folder at the repository root.
-2. Put the project's entry page at `<folder>/index.html`.
-3. Add a project-specific `README.md` with features, technologies and run instructions.
-4. Add an entry to `projects.json` using the existing schema.
-5. Keep project-specific CSS, JavaScript and media inside that folder.
+2. Add the project's entry page as `<project-folder>/index.html`.
+3. Include a project-specific `README.md` with its purpose, features, technologies and run instructions.
+4. Add a matching entry to `projects.json` using the existing schema.
+5. Keep project-specific styles, scripts and media inside that project folder.
+6. Add or update its preview image and public metadata where applicable.
 
-The gallery reads `projects.json` at runtime. Use relative paths (for example, `./my-project/`) so it works under the GitHub Pages repository subpath.
+Use relative paths in the registry (for example, `./my-project/`) so the gallery works when hosted from the repository's GitHub Pages subpath.
 
-## Development and validation\n\nThe repository includes a pinned Tailwind CLI setup and a project-registry validator. Install dependencies with `npm install`, then run `npm run validate:projects` to check required project fields, duplicate slugs, relative paths, preview assets and source URLs. Run `npm run build` to validate the registry and compile the Tailwind source from `src/input.css` into `assets/css/styles.css`.\n\n**Deployment note:** GitHub Pages still publishes directly from `main / root`. The current homepage continues to use the Tailwind CDN until the compiled stylesheet has been generated and committed; do not remove the CDN reference before that file exists and has been checked.\n\n## SEO and indexing\n\nThe homepage includes canonical, Open Graph, Twitter and CollectionPage metadata. `robots.txt` and `sitemap.xml` describe the public homepage and Resonance project. Update the sitemap when adding or removing public project pages.\n\n## Local preview
+## Run locally
 
-Because the homepage loads `projects.json` using `fetch()`, serve the repository root with a local HTTP server rather than opening `index.html` directly.
+The homepage loads `projects.json` with `fetch()`, so run the repository through a local HTTP server rather than opening `index.html` directly.
 
-For example:
-
+**Python**
 ```bash
 python -m http.server 8000
 ```
 
-Then visit `http://localhost:8000`.
+Then open [http://localhost:8000](http://localhost:8000).
 
-## Styling
+## Development
 
-The gallery currently uses Tailwind CSS utilities through the Tailwind CDN for a no-build static setup. For a production deployment with a compiled, purged stylesheet, a build pipeline can be introduced as a separate improvement.
+Install the repository dependencies:
 
-## Scope
+```bash
+npm install
+```
 
-This repository is for static sites, mini-apps, prototypes, UI experiments and learning projects. It is not intended to be a monolithic application.
+Validate the project registry:
+
+```bash
+npm run validate:projects
+```
+
+Build the Tailwind stylesheet:
+
+```bash
+npm run build
+```
+
+The build task validates the registry and compiles the Tailwind source from `src/input.css` into `assets/css/styles.css`.
+
+> **Current homepage note:** The published homepage currently uses the Tailwind CDN for its styling. Keep that reference until a compiled stylesheet has been generated, committed and verified.
+
+## Publishing
+
+The project gallery is published through GitHub Pages:
+
+- **Live gallery:** https://jyotiinhex.github.io/static_projects/
+- **Deployment source:** `main` branch, repository root.
+
+When adding or removing public projects, update `projects.json` and the sitemap as needed.
+
+## Project principles
+
+- **Independent:** Each project can be understood and developed on its own.
+- **Usable:** Prioritize clear interfaces and practical interactions.
+- **Maintainable:** Keep code organized and avoid unnecessary coupling.
+- **Discoverable:** Document each project and provide a working preview where possible.
+- **Experimental:** Use the collection to learn, test ideas and ship small things.
+
+---
+
+<div align="center">
+
+Made with curiosity by **[Parag Jyoti Das](https://github.com/JyotiInHex)**.
+
+[Project Gallery](https://jyotiinhex.github.io/static_projects/) · [GitHub Profile](https://github.com/JyotiInHex)
+
+</div>
