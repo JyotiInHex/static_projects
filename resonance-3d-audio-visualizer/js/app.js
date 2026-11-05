@@ -245,6 +245,44 @@
   let state = 'idle'; // idle | playing | paused | ended | mic
   let tStart = 0, vol = prefs.vol, muted = false, sens = 1, shuffle = false, repeat = false, cur = -1, token = 0, drag = false;
   const list = []; // { file, name }
+  let ytActive = false, ytPaused = false;
+  const ytPanel = document.getElementById('youtubePanel');
+  const ytFrameWrap = document.getElementById('youtubeFrameWrap');
+  const ytFrame = () => ytFrameWrap.querySelector('iframe');
+  function stopYouTube() {
+    ytActive = false; ytPaused = false;
+    ytFrameWrap.innerHTML = '<div class="youtube-placeholder">Your YouTube video will appear here.</div>';
+    document.getElementById('youtubePanel').hidden = true;
+    if (state !== 'mic') setName(list[cur] ? list[cur].name : 'No track loaded');
+    refresh();
+  }
+  function youtubeId(value) {
+    try {
+      const u = new URL(value);
+      let id = '';
+      if (u.hostname === 'youtu.be' || u.hostname.endsWith('.youtu.be')) id = u.pathname.split('/').filter(Boolean)[0] || '';
+      else if (u.hostname === 'youtube.com' || u.hostname.endsWith('.youtube.com') || u.hostname === 'youtube-nocookie.com') {
+        if (u.pathname === '/watch') id = u.searchParams.get('v') || '';
+        else if (/^\/(embed|shorts|live)\//.test(u.pathname)) id = u.pathname.split('/')[2] || '';
+      }
+      return /^[a-zA-Z0-9_-]{11}$/.test(id) ? id : '';
+    } catch (e) { return ''; }
+  }
+  function loadYouTube(value) {
+    const id = youtubeId(value);
+    if (!id) return toast('Paste a valid YouTube video link');
+    token++; stopSrc(); stopMic(); buffer = null; cur = -1;
+    ytActive = true; ytPaused = false; state = 'idle';
+    ytFrameWrap.innerHTML = '<iframe title="YouTube music player" src="https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&controls=1&rel=0&playsinline=1&enablejsapi=1" allow="autoplay; encrypted-media; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+    document.getElementById('youtubePanel').hidden = false;
+    setName('YouTube playback');
+    document.getElementById('cur').textContent = document.getElementById('dur').textContent = '—';
+    refresh();
+  }
+  function youtubeCommand(command) {
+    const frame = ytFrame();
+    if (frame && frame.contentWindow) frame.contentWindow.postMessage(JSON.stringify({event:'command',func:command,args:[]}), 'https://www.youtube-nocookie.com');
+  }
   const seek = document.getElementById('seek'), volEl = document.getElementById('vol');
   const fmt = t => { t = Math.max(0, t | 0); return (t / 60 | 0) + ':' + String(t % 60).padStart(2, '0'); };
   const setName = t => { document.getElementById('name').textContent = t; };
@@ -264,12 +302,12 @@
   const applyGain = () => { if (gain) gain.gain.value = state === 'mic' ? 0 : muted ? 0 : vol; };
 
   function refresh() {
-    document.getElementById('play').innerHTML = ic(state === 'playing' ? 'pause' : 'play');
-    document.getElementById('empty').classList.toggle('hide', list.length > 0 || state === 'mic');
+    document.getElementById('play').innerHTML = ic((ytActive && !ytPaused) || state === 'playing' ? 'pause' : 'play');
+    document.getElementById('empty').classList.toggle('hide', ytActive || list.length > 0 || state === 'mic');
     document.getElementById('mic').classList.toggle('on', state === 'mic');
     document.getElementById('shuf').classList.toggle('on', shuffle); document.getElementById('rep').classList.toggle('on', repeat);
     document.getElementById('mute').innerHTML = ic(muted || vol === 0 ? 'volx' : 'vol');
-    document.getElementById('seekbox').classList.toggle('off', !buffer);
+    document.getElementById('seekbox').classList.toggle('off', !buffer || ytActive);
   }
 
   function renderList() {
@@ -300,6 +338,7 @@
 
   async function go(i) {
     if (i < 0 || i >= list.length) return false;
+    if (ytActive) stopYouTube();
     ensureAudio(); stopMic();
     const my = ++token; cur = i; renderList(); setName('Loading…');
     try {
@@ -322,6 +361,7 @@
   const prev = () => { if (buffer && tNow() > 3) doSeek(0); else step(-1); };
 
   async function toggle() {
+    if (ytActive) { youtubeCommand(ytPaused ? 'playVideo' : 'pauseVideo'); ytPaused = !ytPaused; refresh(); return; }
     if (state === 'mic') return;
     if (!buffer) return list.length ? go(Math.max(cur, 0)) : document.getElementById('file').click();
     if (state === 'playing') { await ctx.suspend(); state = 'paused'; }
@@ -345,6 +385,7 @@
     state = 'idle'; applyGain(); refresh();
   }
   async function toggleMic() {
+    if (ytActive) stopYouTube();
     if (micStream) { setName(list[cur] ? list[cur].name : 'No track loaded'); return stopMic(); }
     try {
       ensureAudio();
@@ -363,6 +404,9 @@
   }
 
   // controls
+  document.getElementById('bYouTube').onclick = () => { document.getElementById('youtubePanel').hidden = false; document.getElementById('youtubeUrl').focus(); };
+  document.getElementById('youtubeClose').onclick = stopYouTube;
+  document.getElementById('youtubeForm').onsubmit = e => { e.preventDefault(); loadYouTube(document.getElementById('youtubeUrl').value.trim()); };
   document.getElementById('play').onclick = toggle; document.getElementById('next').onclick = () => step(1); document.getElementById('prev').onclick = prev;
   document.getElementById('shuf').onclick = () => { shuffle = !shuffle; refresh(); };
   document.getElementById('rep').onclick = () => { repeat = !repeat; refresh(); };
@@ -370,6 +414,7 @@
   document.getElementById('pick').onclick = document.getElementById('add').onclick = () => document.getElementById('file').click();
   document.getElementById('file').onchange = e => { addFiles(e.target.files); e.target.value = ''; };
   document.getElementById('clear').onclick = () => {
+    if (ytActive) stopYouTube();
     token++; stopSrc(); list.length = 0; cur = -1; buffer = null; if (state !== 'mic') state = 'idle';
     setName(micStream ? 'Microphone (live)' : 'No track loaded'); document.getElementById('cur').textContent = document.getElementById('dur').textContent = '0:00'; seek.value = 0; fillRange(seek);
     renderList(); applyGain(); refresh();
