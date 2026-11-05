@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Project-gallery styles */
+:root { color-scheme: light; }
+body { background: #f7f8fa; color: #17191d; }
+::selection { background: #dce5ff; color: #17358f; }
+.grid-bg {
+  background-image: linear-gradient(rgba(23,25,29,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23,25,29,.035) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+.project-card { transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+.project-card:hover { transform: translateY(-4px); box-shadow: 0 18px 48px rgba(20,28,45,.09); border-color: #cbd5e1; }
+.project-image { background: linear-gradient(135deg,#e8edfb,#f3f5f9); }
+.project-image img { transition: transform .65s cubic-bezier(.2,.7,.2,1); }
+.project-card:hover .project-image img { transform: scale(1.035); }
+.filter-chip[aria-pressed="true"] { background: #17191d; color: #fff; border-color: #17191d; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
