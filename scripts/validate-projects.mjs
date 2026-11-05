@@ -45,6 +45,12 @@ for (const [index, project] of registry.projects.entries()) {
   } else if (project.path && !(await exists(project.path.replace(/^\.\//, '')))) {
     errors.push(`${label}: path does not exist: ${project.path}`);
   }
+  if (project.detailPath && !(await exists(project.detailPath.replace(/^\.\//, '')))) {
+    errors.push(`${label}: detail page does not exist: ${project.detailPath}`);
+  }
+  if (project.status && !['Available', 'In development', 'Archived'].includes(project.status)) {
+    errors.push(`${label}: status must be Available, In development, or Archived`);
+  }
   if (project.preview && !(await exists(project.preview.replace(/^\.\//, '')))) {
     errors.push(`${label}: preview image does not exist: ${project.preview}`);
   }
