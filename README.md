@@ -36,7 +36,7 @@ static_projects/
 
 The gallery reads `projects.json` at runtime. Use relative paths (for example, `./my-project/`) so it works under the GitHub Pages repository subpath.
 
-## Local preview
+## Development and validation\n\nThe repository includes a pinned Tailwind CLI setup and a project-registry validator. Install dependencies with `npm install`, then run `npm run validate:projects` to check required project fields, duplicate slugs, relative paths, preview assets and source URLs. Run `npm run build` to validate the registry and compile the Tailwind source from `src/input.css` into `assets/css/styles.css`.\n\n**Deployment note:** GitHub Pages still publishes directly from `main / root`. The current homepage continues to use the Tailwind CDN until the compiled stylesheet has been generated and committed; do not remove the CDN reference before that file exists and has been checked.\n\n## SEO and indexing\n\nThe homepage includes canonical, Open Graph, Twitter and CollectionPage metadata. `robots.txt` and `sitemap.xml` describe the public homepage and Resonance project. Update the sitemap when adding or removing public project pages.\n\n## Local preview
 
 Because the homepage loads `projects.json` using `fetch()`, serve the repository root with a local HTTP server rather than opening `index.html` directly.
 
