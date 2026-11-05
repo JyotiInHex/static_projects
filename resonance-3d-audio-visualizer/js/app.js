@@ -243,12 +243,13 @@
   const save = () => { try { localStorage.setItem('resonance', JSON.stringify(prefs)); } catch (e) {} };
   let ctx, analyser, gain, data, buffer, src, micStream, micNode;
   let state = 'idle'; // idle | playing | paused | ended | mic
+  let youtubeActive = false, youtubeDuration = 0, youtubeTime = 0;
   let tStart = 0, vol = prefs.vol, muted = false, sens = 1, shuffle = false, repeat = false, cur = -1, token = 0, drag = false;
   const list = []; // { file, name }
   const seek = document.getElementById('seek'), volEl = document.getElementById('vol');
   const fmt = t => { t = Math.max(0, t | 0); return (t / 60 | 0) + ':' + String(t % 60).padStart(2, '0'); };
   const setName = t => { document.getElementById('name').textContent = t; };
-  const tNow = () => !buffer || !ctx ? 0 : state === 'ended' ? buffer.duration : Math.min(buffer.duration, Math.max(0, ctx.currentTime - tStart));
+  const tNow = () => youtubeActive ? youtubeTime : !buffer || !ctx ? 0 : state === 'ended' ? buffer.duration : Math.min(buffer.duration, Math.max(0, ctx.currentTime - tStart));
   const fillRange = el => el.style.setProperty('--p', (el.value - el.min) / (el.max - el.min) * 100 + '%');
   function toast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('show'), 2600); }
 
@@ -265,11 +266,11 @@
 
   function refresh() {
     document.getElementById('play').innerHTML = ic(state === 'playing' ? 'pause' : 'play');
-    document.getElementById('empty').classList.toggle('hide', list.length > 0 || state === 'mic');
+    document.getElementById('empty').classList.toggle('hide', list.length > 0 || state === 'mic' || youtubeActive);
     document.getElementById('mic').classList.toggle('on', state === 'mic');
     document.getElementById('shuf').classList.toggle('on', shuffle); document.getElementById('rep').classList.toggle('on', repeat);
     document.getElementById('mute').innerHTML = ic(muted || vol === 0 ? 'volx' : 'vol');
-    document.getElementById('seekbox').classList.toggle('off', !buffer);
+    document.getElementById('seekbox').classList.toggle('off', !buffer && !youtubeActive);
   }
 
   function renderList() {
@@ -319,9 +320,10 @@
     else { n = cur + dir; if (n >= list.length || n < 0) { if (auto && !repeat) return false; n = (n + list.length) % list.length; } }
     go(n); return true;
   }
-  const prev = () => { if (buffer && tNow() > 3) doSeek(0); else step(-1); };
+  const prev = () => { if (youtubeActive) { window.resonanceYouTube?.seekTo(0); return; } if (buffer && tNow() > 3) doSeek(0); else step(-1); };
 
   async function toggle() {
+    if (youtubeActive) { window.resonanceYouTube?.toggle(); return; }
     if (state === 'mic') return;
     if (!buffer) return list.length ? go(Math.max(cur, 0)) : document.getElementById('file').click();
     if (state === 'playing') { await ctx.suspend(); state = 'paused'; }
@@ -357,10 +359,47 @@
   }
 
   function tickUI() {
-    if (!buffer || drag) return;
+    if ((!buffer && !youtubeActive) || drag) return;
+    const duration = youtubeActive ? youtubeDuration : buffer.duration;
+    if (!duration) return;
     const p = tNow();
-    seek.value = p / buffer.duration * 1000; fillRange(seek); document.getElementById('cur').textContent = fmt(p);
+    seek.value = p / duration * 1000; fillRange(seek); document.getElementById('cur').textContent = fmt(p);
   }
+
+
+  // YouTube is an alternate playback source; keep it separate from local Web Audio.
+  window.addEventListener('resonance:youtube', event => {
+    const d = event.detail || {};
+    youtubeActive = !!d.active;
+    if (d.active) {
+      buffer = null; token++; stopSrc(); if (micStream) stopMic();
+      youtubeDuration = Number(d.duration) || youtubeDuration || 0;
+      youtubeTime = Number(d.currentTime) || 0;
+      state = d.playing ? 'playing' : 'paused';
+      if (d.title) setName(d.title);
+      document.getElementById('dur').textContent = fmt(youtubeDuration);
+      document.getElementById('cur').textContent = fmt(youtubeTime);
+      seek.value = youtubeDuration ? youtubeTime / youtubeDuration * 1000 : 0; fillRange(seek);
+      if (data) data.fill(0);
+    } else {
+      youtubeDuration = youtubeTime = 0;
+      if (state !== 'mic') state = 'idle';
+      setName(list[cur] ? list[cur].name : 'No track loaded');
+      document.getElementById('cur').textContent = document.getElementById('dur').textContent = '0:00';
+      seek.value = 0; fillRange(seek);
+    }
+    refresh();
+  });
+  window.addEventListener('resonance:youtube-time', event => {
+    const d = event.detail || {};
+    if (!youtubeActive) return;
+    youtubeTime = Number(d.currentTime) || 0;
+    if (Number(d.duration) > 0) youtubeDuration = Number(d.duration);
+    if (typeof d.playing === 'boolean') state = d.playing ? 'playing' : 'paused';
+    if (!drag) tickUI();
+    document.getElementById('dur').textContent = fmt(youtubeDuration);
+    document.getElementById('play').innerHTML = ic(state === 'playing' ? 'pause' : 'play');
+  });
 
   // controls
   document.getElementById('play').onclick = toggle; document.getElementById('next').onclick = () => step(1); document.getElementById('prev').onclick = prev;
@@ -374,10 +413,10 @@
     setName(micStream ? 'Microphone (live)' : 'No track loaded'); document.getElementById('cur').textContent = document.getElementById('dur').textContent = '0:00'; seek.value = 0; fillRange(seek);
     renderList(); applyGain(); refresh();
   };
-  seek.oninput = () => { if (buffer) { drag = true; document.getElementById('cur').textContent = fmt(seek.value / 1000 * buffer.duration); } };
-  seek.onchange = () => { drag = false; doSeek(seek.value / 1000 * buffer.duration); };
-  volEl.oninput = () => { vol = volEl.value / 100; muted = false; prefs.vol = vol; save(); applyGain(); refresh(); };
-  document.getElementById('mute').onclick = () => { muted = !muted; applyGain(); refresh(); };
+  seek.oninput = () => { const duration = youtubeActive ? youtubeDuration : buffer && buffer.duration; if (duration) { drag = true; document.getElementById('cur').textContent = fmt(seek.value / 1000 * duration); } };
+  seek.onchange = () => { drag = false; const duration = youtubeActive ? youtubeDuration : buffer && buffer.duration; if (!duration) return; const target = seek.value / 1000 * duration; if (youtubeActive) window.resonanceYouTube?.seekTo(target); else doSeek(target); };
+  volEl.oninput = () => { vol = volEl.value / 100; muted = false; prefs.vol = vol; save(); if (youtubeActive) window.resonanceYouTube?.setVolume(vol * 100); else applyGain(); refresh(); };
+  document.getElementById('mute').onclick = () => { muted = !muted; if (youtubeActive) window.resonanceYouTube?.setVolume(muted ? 0 : vol * 100); else applyGain(); refresh(); };
   document.getElementById('full').onclick = () => {
     const el = document.documentElement;
     if (document.fullscreenElement) document.exitFullscreen();
